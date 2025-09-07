@@ -250,6 +250,67 @@
             justify-content: space-between;
             margin-bottom: 4px;
         }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+        .modal-text {
+            font-size: 1rem;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .modal-link {
+            display: block;
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-size: 0.9rem;
+            color: #6366f1;
+            text-decoration: none;
+            border: 1px solid #e5e7eb;
+        }
+        .modal-link:hover {
+            background: #e5e7eb;
+        }
+        .close-modal {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+        .close-modal:hover {
+            background: #5856f0;
+        }
     </style>
 </head>
 <body>
@@ -295,7 +356,7 @@
                     </div>
 
                     <div class="card">
-                        <label class="input-label">How many campaigns do you typically run per year in total, across all your platforms/accounts?</label>
+                        <label class="input-label">On average, how many campaigns do you run on each account?</label>
                         <div class="persona-info">
                             <span class="persona-icon">👤</span>
                             <span class="persona-text purple-text">Best to ask: Campaign Manager or Media Buyer</span>
@@ -370,13 +431,12 @@
                             <span id="defaultDashboards" style="font-weight: 600; color: #6366f1;">0</span>
                         </div>
                         <div style="text-align: center; margin-top: 16px;">
-                            <button class="btn btn-primary" onclick="nextPage()">Continue to Additional Requirements →</button>
+                            <button class="btn btn-primary" onclick="goNext()">Continue to Additional Requirements →</button>
                             <p style="font-size: 0.8rem; color: #6b7280; margin-top: 8px;">Optional: Add dashboards, patterns, and data enrichments</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
         </div>
 
         <!-- Page 2: Additional Requirements -->
@@ -503,15 +563,28 @@
             </div>
 
             <div class="nav-buttons">
-                <button class="btn btn-secondary" onclick="prevPage()">← Back to Basic Questions</button>
-                <button class="btn btn-primary" onclick="alert('Estimation complete! You can now use these numbers for your proposal.')">Complete Estimation</button>
+                <button class="btn btn-secondary" onclick="goBack()">← Back to Basic Questions</button>
+                <button class="btn btn-primary" onclick="showModal()">Complete Estimation</button>
             </div>
         </div>
     </div>
 
-    <script>
-        let currentPage = 1;
+    <!-- Completion Modal -->
+    <div id="completionModal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-title">Estimation Complete!</h2>
+            <p class="modal-text">
+                Excellent! You can now use the numbers from the estimation cards on the right and enter them into cells D4-D8 in the MI Consumption Calculator:
+            </p>
+            <a href="https://docs.google.com/spreadsheets/d/19iRn43nh3DLYJ10El80st-iX5U6FMg3-oBMtL-KEOY4/edit?usp=sharing" 
+               target="_blank" class="modal-link">
+               Open MI Consumption Calculator
+            </a>
+            <button class="close-modal" onclick="hideModal()">Got it!</button>
+        </div>
+    </div>
 
+    <script>
         function formatNumber(num) {
             if (num >= 1000000) {
                 return (num / 1000000).toFixed(1) + 'M';
@@ -534,7 +607,7 @@
             const enrichments = parseFloat(document.getElementById('enrichments').value) || 0;
 
             const dataPipelines = platforms * accounts;
-            const dailyRowsPerPipeline = (campaigns * adgroups * creatives * duration) / 365;
+            const dailyRowsPerPipeline = (campaigns * platforms * accounts * adgroups * creatives * duration) / 365 / dataPipelines;
             const yearlyRows = dataPipelines * dailyRowsPerPipeline * 365;
             const defaultDashboards = platforms;
             const totalDashboards = defaultDashboards + additionalDashboards + executiveDashboards;
@@ -557,30 +630,44 @@
             document.getElementById('executiveCount').textContent = executiveDashboards;
         }
 
-        function nextPage() {
+        function goNext() {
             document.getElementById('page1').classList.remove('active');
             document.getElementById('page2').classList.add('active');
             document.getElementById('progressFill').style.width = '100%';
             document.getElementById('pageIndicator').textContent = 'Page 2 of 2: Additional Requirements';
-            currentPage = 2;
         }
 
-        function prevPage() {
+        function goBack() {
             document.getElementById('page2').classList.remove('active');
             document.getElementById('page1').classList.add('active');
             document.getElementById('progressFill').style.width = '50%';
             document.getElementById('pageIndicator').textContent = 'Page 1 of 2: Basic Data Collection';
-            currentPage = 1;
         }
 
-        // Add event listeners to all inputs
-        const inputs = document.querySelectorAll('input');
-        inputs.forEach(input => {
-            input.addEventListener('input', calculateResults);
-        });
+        function showModal() {
+            document.getElementById('completionModal').style.display = 'block';
+        }
 
-        // Initial calculation
-        calculateResults();
+        function hideModal() {
+            document.getElementById('completionModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('completionModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Set up input listeners and initial calculation
+        window.onload = function() {
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('input', calculateResults);
+            });
+            calculateResults();
+        }
     </script>
 </body>
 </html>
