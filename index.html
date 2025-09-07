@@ -414,13 +414,13 @@
                             <span class="persona-icon">👤</span>
                             <span class="persona-text amber-text">Best to ask: Campaign Manager or Marketing Operations</span>
                         </div>
-                        <p class="input-desc">Structured naming formats that embed information in campaign names, ad groups, or creatives.</p>
+                        <p class="input-desc">Patterns extract information embedded in structured naming conventions in Campaign Names, Ad Groups, creatives etc.</p>
                         <div class="example-box">
                             <p style="font-weight: 600; margin-bottom: 6px;">Example: Product_Audience_Season</p>
                             <p style="color: #6b7280; margin-bottom: 6px;">Sample: "Shoes_Women_Summer2024"</p>
                             <p class="amber-text">Extracts: Product Type, Target Audience, Season</p>
                         </div>
-                        <p class="input-examples amber-text">Examples: 3 patterns (product, brand, retargeting), 5 patterns (different business units)</p>
+                        <p class="input-examples amber-text">Note: One Pattern is counted for each naming convention, regardless of the number of extractions</p>
                         <input type="number" id="patterns" class="input-field" placeholder="e.g., 3" min="0">
                     </div>
 
@@ -440,7 +440,7 @@
                             <p style="color: #dc2626; margin-bottom: 4px;">Before: "iPhone 15", "Samsung S24", "Pixel 8"</p>
                             <p class="teal-text">After: All become "Mobile Device"</p>
                         </div>
-                        <p class="input-examples teal-text">Examples: 5 enrichments (Region, Device, Campaign Type, Audience, Product Category)</p>
+                        <p class="input-examples teal-text">Note: One Enrichment is counted for each Dimension it is applied to, regardless of how many classifications are created with that Enrichment</p>
                         <input type="number" id="enrichments" class="input-field" placeholder="e.g., 4" min="0">
                     </div>
                 </div>
